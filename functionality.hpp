@@ -17,6 +17,7 @@ public:
     string get_user_role(int id);
     void set_role(int id);
     void select_user_by_id(int id, userdata& user);
+    void get_user_table();
 };
 
 function::function(query* q)
@@ -54,6 +55,11 @@ void function::select_user_by_id(int id, userdata& user)
     user = this->q->get_user_by_id(id);
     if (user.id == 0)
         cout << "There is no user with such id";
+}
+
+void function::get_user_table()
+{
+    this->q->get_all_users();
 }
 
 string function::hashfunc(string a)

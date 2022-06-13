@@ -12,6 +12,10 @@ public:
     interface(function * func);
     ~interface();
     void main_menu();
+    void role_menu(string role);
+    void admin_menu();
+    void manager_menu();
+    void client_menu();
     void start_programm();
     void sign_up_form();
     void sign_in_form();
@@ -50,6 +54,52 @@ void interface::start_programm()
         main_menu(); 
     }
 };
+
+
+void interface::admin_menu()
+{
+    system("cls");
+    cout << "> Open users list (1)" << endl;
+    cout << "> ... (2)" << endl;
+    cout << "> Exit (3)" << endl;
+    int var = input_correction();
+    switch (var)
+    {
+    case 1:
+        func->get_user_table();
+        system("pause");
+        break;
+    case 2:
+
+        break;
+    case 3:
+        exit(EXIT_SUCCESS);
+        break;
+    default:
+        system("pause");
+        return;
+    }
+
+}
+
+void interface::manager_menu()
+{
+    system("cls");
+    cout << "> Sign up (1)" << endl;
+    cout << "> Log in (2)" << endl;
+    cout << "> Exit (3)" << endl;
+
+}
+
+void interface::client_menu()
+{
+    system("cls");
+    cout << "> Sign up (1)" << endl;
+    cout << "> Log in (2)" << endl;
+    cout << "> Exit (3)" << endl;
+
+}
+
 
 void interface::sign_up_form()
 {
@@ -100,6 +150,7 @@ void interface::sign_in_form()
         this->u.email = user.email;
         this->u.phone = user.phone;
         this->u.role = this->func->get_user_role(id);
+        cout << "Role" << u.role << endl;
         system("pause");
     }
     else
@@ -107,6 +158,7 @@ void interface::sign_in_form()
         cout << "Please try one more time, you entered incorrect username or password.";
         system("pause");
     }
+    role_menu(u.role);
 }
 
 void interface::main_menu()
@@ -123,6 +175,7 @@ void interface::main_menu()
         break;
     case 2:
         sign_in_form();
+        system("pause");
         break;
     case 3:
         exit(EXIT_SUCCESS);
@@ -133,39 +186,32 @@ void interface::main_menu()
     }
 }
 
-/*void role_menu(string r, query* q)
+void interface::role_menu(string role)
 {
     int selector;
     system("cls");
-    if (r == "admin")
+    if (role == "admin")
         selector = 1;
-    else if (r == "manager")
+    else if (role == "manager")
         selector = 2;
-    else if (r == "client")
+    else if (role == "client")
         selector = 3;
     switch (selector)
     {
     case 1:
         cout << "Success authorization as admin!" << endl;
-        admin_menu(q);
+        admin_menu();
+        system("pause");
         break;
     case 2:
         cout << "Success authorization as manager!" << endl;
+        manager_menu();
         break;
     case 3:
         cout << "Success authorization as client!" << endl;
+        client_menu();
         break;
     }
 }
-
-void admin_menu(query* q)
-{
-    int var;
-    cout << "Enter id to receive info about user with this id:" << endl;
-    cin >> var;
-    userdata player = q->get_user_by_id(var);
-    cout << "Username: " << player.username << ", his/her email: " << player.email << ", his/her phone number: " << player.phone << endl;
-    
-}*/
 
 

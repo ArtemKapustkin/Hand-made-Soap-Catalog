@@ -22,6 +22,7 @@ private:
     PreparedStatement* pstmt;
     ResultSet* res;
     userdata u;
+    userdata tu;
 public:
     query()
     {
@@ -165,20 +166,24 @@ public:
         }
     }
 
-    /*void get_all_users()
+    void get_all_users()
     {
         try
         {
             string query = "select u.id, u.username, u.email, u.phone, r.role_name from user as u join role as r on r.user_id = u.id";
             pstmt = con->prepareStatement(query);
             res = pstmt->executeQuery();
+            printf("+----+--------------------+------------------------------+-------------+----------+\n");
+            printf("+ id |      username      |             email            |    phone    |   role   |\n");
+            printf("+----+--------------------+------------------------------+-------------+----------+\n");
             while (res->next())
             {
-                cout << "id: " << res->getInt(tu.id) << " | ";
-                cout << "username: " << res->getString(tu.username) << " | ";
-                cout << "email " << res->getString(tu.email) << " | ";
-                cout << "phone: " << res->getString(tu.phone) << " | ";
-                cout << "role: " << res->getString(tu.role) << endl;
+                cout << "|" << setw(4) << res->getInt("id") << "|" <<
+                setw(20) << res->getString("username") << "|" <<
+                setw(30) << res->getString("email") << "|" <<
+                setw(13) << res->getString("phone") << "|" <<
+                setw(10) << res->getString("role_name") << "|" << endl;
+                cout << "+----+--------------------+------------------------------+-------------+----------+\n";
             }
             cout << endl;
             delete res;
@@ -188,6 +193,5 @@ public:
         {
             error(e);
         }
-    }*/
-
+    }
 };
