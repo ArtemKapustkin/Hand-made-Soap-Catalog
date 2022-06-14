@@ -18,6 +18,7 @@ public:
     void set_role(int id);
     void select_user_by_id(int id, userdata& user);
     void get_user_table();
+    void get_soap_table();
 };
 
 function::function(query* q)
@@ -60,6 +61,11 @@ void function::select_user_by_id(int id, userdata& user)
 void function::get_user_table()
 {
     this->q->get_all_users();
+}
+
+void function::get_soap_table()
+{
+    this->q->get_all_soap();
 }
 
 string function::hashfunc(string a)

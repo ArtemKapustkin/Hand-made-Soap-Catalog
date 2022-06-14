@@ -60,7 +60,7 @@ void interface::admin_menu()
 {
     system("cls");
     cout << "> Open users list (1)" << endl;
-    cout << "> ... (2)" << endl;
+    cout << "> Open soap list (2)" << endl;
     cout << "> Exit (3)" << endl;
     int var = input_correction();
     switch (var)
@@ -70,7 +70,8 @@ void interface::admin_menu()
         system("pause");
         break;
     case 2:
-
+        func->get_soap_table();
+        system("pause");
         break;
     case 3:
         exit(EXIT_SUCCESS);

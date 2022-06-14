@@ -26,7 +26,7 @@ struct userdata
     string role;
 };
 
-struct soap
+struct soapdata
 {
     int soap_id;
     string soap_name;
