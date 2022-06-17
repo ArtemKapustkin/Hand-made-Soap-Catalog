@@ -19,6 +19,8 @@ public:
     void start_programm();
     void sign_up_form();
     void sign_in_form();
+    void adding_soap();
+    void adding_order(userdata u);
 };
 
 int interface::input_correction()
@@ -55,13 +57,83 @@ void interface::start_programm()
     }
 };
 
+void interface::adding_soap()
+{
+    system("cls");
+    cout << "Soap Form" << endl;
+    string sn, c;
+    int app, s, ti;
+    double p;
+    cout << "Enter soap name in brackets" << endl << "< ";
+    getchar();
+    getline(cin, sn);
+    cout << endl << "Enter how much soap pieces in set (amount per pack)" << endl << "< ";
+    cin >> app;
+    cout << endl << "Enter collection" << endl << "< ";
+    getchar();
+    getline(cin, c);
+    cout << endl << "Enter price" << endl << "< ";
+    cin >> p;
+    cout << endl << "Enter how many of these sets are in stock" << endl << "< ";
+    cin >> s;
+    cout << endl << "Select type id:" << endl 
+    << "(1) Soap Floristy" << endl
+    << "(2) Care Product" << endl
+    << "(3) Gift Set" << endl
+    << "(4) Thematic Set" << endl
+    << "(5) Single" << endl
+    << "< ";
+    cin >> ti;
+    
+    int soap_id = func->add_soap(sn, app, c, p, s, ti);
+}
+
+void interface::adding_order(userdata u)
+{
+    soap_ordered so;
+    soap_by_id s;
+    int quan;
+    int user_id = u.id;
+    cout << "Order Form" << endl;
+    cout << "Enter ID of soap, you want to order " << endl;
+    cout << "< ";
+    cin >> so.soap_id;
+    func->select_soap_by_id(so.soap_id, s);
+    so.soap_price = s.price;
+    if (s.quantity != 0)
+    {
+        cout << "Enter quantity you want to order : " << endl;
+        cout << "< ";
+        cin >> quan;
+        if (quan > s.quantity)
+            cout << "Sorry, we have not so much of this one in stock, try to order less units or wait for replenishment.";
+        else
+        {
+            so.quantity = quan;
+            if (so.quantity >= 5)
+                so.discount = 5;
+            else
+                so.discount = 0;
+            cout << "Your order have this info:" << endl;
+            cout << "Soap: " << s.soap_name << ", price: " << so.soap_price << ", quantity: " << so.quantity << ", discount(5% if you order more than five units): " << so.discount << endl;
+            int i = func->add_order(u.id, so);
+            cout << "Order succesfully added!";
+        }
+            
+    }
+    else
+    {
+        cout << "Sorry, we have not this one in stock, try something else or wait for replenishment.";
+    }
+}
 
 void interface::admin_menu()
 {
     system("cls");
     cout << "> Open users list (1)" << endl;
     cout << "> Open soap list (2)" << endl;
-    cout << "> Exit (3)" << endl;
+    cout << "> Add new soap (3)" << endl;
+    cout << "> Exit (4)" << endl;
     int var = input_correction();
     switch (var)
     {
@@ -74,33 +146,79 @@ void interface::admin_menu()
         system("pause");
         break;
     case 3:
+        adding_soap();
+        system("pause");
+        break;
+    case 4:
         exit(EXIT_SUCCESS);
         break;
     default:
         system("pause");
         return;
     }
-
 }
 
 void interface::manager_menu()
 {
     system("cls");
-    cout << "> Sign up (1)" << endl;
-    cout << "> Log in (2)" << endl;
-    cout << "> Exit (3)" << endl;
-
+    cout << "> Open order list (1)" << endl;
+    cout << "> Open soap list (2)" << endl;
+    cout << "> Add new soap (3)" << endl;
+    cout << "> Exit (4)" << endl;
+    int var = input_correction();
+    switch (var)
+    {
+    case 1:
+        func->get_order_table();
+        system("pause");
+        break;
+    case 2:
+        func->get_soap_table();
+        system("pause");
+        break;
+    case 3:
+        adding_soap();
+        system("pause");
+        break;
+    case 4:
+        exit(EXIT_SUCCESS);
+        break;
+    default:
+        system("pause");
+        return;
+    }
 }
 
 void interface::client_menu()
 {
     system("cls");
-    cout << "> Sign up (1)" << endl;
-    cout << "> Log in (2)" << endl;
+    cout << "> Open soap list (1)" << endl;
+    cout << "> Make an order (2)" << endl;
+    cout << "> My orders (3)" << endl;
     cout << "> Exit (3)" << endl;
-
+    int var = input_correction();
+    switch (var)
+    {
+    case 1:
+        func->get_soap_table();
+        system("pause");
+        break;
+    case 2:
+        adding_order(u);
+        system("pause");
+        break;
+    case 3:
+        func->user_orders(u.id);
+        system("pause");
+        break;
+    case 4:
+        exit(EXIT_SUCCESS);
+        break;
+    default:
+        system("pause");
+        return;
+    }
 }
-
 
 void interface::sign_up_form()
 {

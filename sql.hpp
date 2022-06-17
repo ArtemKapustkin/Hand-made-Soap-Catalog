@@ -30,10 +30,15 @@ public:
     int check_user(string username, string password);
     string get_role(int id);
     int add_user(sqluserdata a);
+    int add_soap(soapdata s);
+    int add_order(int user_id, soap_ordered so);
     void set_role(int id);
     userdata get_user_by_id(int id);
+    soap_by_id get_soap_by_id(int id);
+    void get_user_order_by_id(int id);
     void get_all_users();
     void get_all_soap();
+    void get_all_orders();
 };
 
 query::query()
@@ -137,6 +142,76 @@ int query::add_user(sqluserdata a)
     }
 }
 
+int query::add_soap(soapdata s)
+{
+    try
+    {
+        string query = "insert into soap (soap_name, amount_per_pack, collection, price, stock, type_id) values (?, ?, ?, ?, ?, ?) ";
+        pstmt = con->prepareStatement(query);
+        pstmt->setString(1, s.soap_name);
+        pstmt->setInt(2, s.amount_per_pack);
+        pstmt->setString(3, s.collection);
+        pstmt->setDouble(4, s.price);
+        pstmt->setInt(5, s.stock);
+        pstmt->setInt(6, s.type_id);
+        pstmt->execute();
+        delete pstmt;
+
+        query = "SELECT LAST_INSERT_ID() AS id";
+        pstmt = con->prepareStatement(query);
+        res = pstmt->executeQuery();
+        res->next();
+        int id = res->getInt64("id");
+        delete res;
+        delete pstmt;
+
+        return id;
+    }
+    catch (SQLException& e)
+    {
+        error(e);
+    }
+}
+
+int query::add_order(int user_id, soap_ordered so)
+{
+    try
+    {
+        string query = "insert into store.order (id, order_user_id, order_status) values (?,?,?)";
+        pstmt = con->prepareStatement(query);
+        pstmt->setInt(1, 0);
+        pstmt->setInt(2, user_id);
+        pstmt->setInt(3, 1);
+        pstmt->execute();
+        delete pstmt;
+
+        query = "SELECT LAST_INSERT_ID() AS id";
+        pstmt = con->prepareStatement(query);
+        res = pstmt->executeQuery();
+        res->next();
+        int id = res->getInt64("id");
+        delete res;
+        delete pstmt;
+
+
+        query = "INSERT INTO store.soap_ordered(order_id, soap_id, soap_price, quantity, discount) VALUES(?, ?, ?, ?, ?)";
+        pstmt = con->prepareStatement(query);
+        pstmt->setInt(1, id);
+        pstmt->setInt(2, so.soap_id);
+        pstmt->setInt(3, so.soap_price);
+        pstmt->setInt(4, so.quantity);
+        pstmt->setInt(5, so.discount);
+        pstmt->execute();
+        delete pstmt;
+
+        return id;
+    }
+    catch (SQLException& e)
+    {
+        error(e);
+    }
+}
+
 void query::set_role(int id)
 {
     try
@@ -162,7 +237,8 @@ userdata query::get_user_by_id(int id)
         pstmt->setString(1, to_string(id));
         res = pstmt->executeQuery();
         userdata user({ 0, "", "", "", "" });
-        if (res->next()) {
+        if (res->next()) 
+        {
             user = userdata({ res->getInt("id"),
                             res->getString("username"),
                             res->getString("email"),
@@ -171,6 +247,62 @@ userdata query::get_user_by_id(int id)
         delete res;
         delete pstmt;
         return user;
+    }
+    catch (SQLException& e)
+    {
+        error(e);
+    }
+}
+
+soap_by_id query::get_soap_by_id(int id)
+{
+    try
+    {
+        string query = "select id, soap_name, price, stock from soap where id = (?)";
+        pstmt = con->prepareStatement(query);
+        pstmt->setString(1, to_string(id));
+        res = pstmt->executeQuery();
+        soap_by_id sid;
+        if (res->next()) 
+        {
+            int a = res->getInt("id");
+            string b = res->getString("soap_name");
+            double c = res->getDouble("price");
+            int d = res->getInt("stock");
+            sid = soap_by_id(a, b, c, d);
+        }
+        delete res;
+        delete pstmt;
+        return sid;
+    }
+    catch (SQLException& e)
+    {
+        error(e);
+    }
+}
+
+void query::get_user_order_by_id(int id)
+{
+    try
+    {
+        string query = "select s.soap_name, so.quantity, so.order_price, o.order_status from store.soap_ordered as so join store.soap as s on so.soap_id = s.id join store.order as o on so.order_id = o.id where o.order_user_id = (?)";
+        pstmt = con->prepareStatement(query);
+        pstmt->setString(1, to_string(id));
+        res = pstmt->executeQuery();
+        printf("+---------------------------+----------+-------------+------------------+\n");
+        printf("|         soap_name         | quantity | order price |   order status   |\n");
+        printf("+---------------------------+----------+-------------+------------------+\n");
+        while (res->next())
+        {
+            cout << "|" << setw(27) << res->getString("soap_name") << "|" <<
+                setw(10) << res->getString("quantity") << "|" <<
+                setw(13) << res->getString("order_price") << "|" <<
+                setw(18) << res->getString("order_status") << "|" << endl;
+            cout <<"+---------------------------+----------+-------------+------------------+\n";
+        }
+        cout << endl;
+        delete res;
+        delete pstmt;
     }
     catch (SQLException& e)
     {
@@ -239,3 +371,34 @@ void query::get_all_soap()
         error(e);
     }
 }
+
+void query::get_all_orders()
+{
+    try
+    {
+        string query = "select o.id, u.username, o.order_status, o.order_date from store.order as o join store.user as u on o.order_user_id = u.id";
+        pstmt = con->prepareStatement(query);
+        res = pstmt->executeQuery();
+        printf("+----+--------------------------+------------------+--------------------+\n");
+        printf("|    |                          |                  |                    |\n");
+        printf("| id |        user name         |      status      |     order date     |\n");
+        printf("|    |                          |                  |                    |\n");
+        printf("+----+--------------------------+------------------+--------------------+\n");
+        while (res->next())
+        {
+            cout << "|" << setw(4) << res->getInt("id") << "|" <<
+                setw(26) << res->getString("username") << "|" <<
+                setw(18) << res->getString("order_status") << "|" <<
+                setw(20) << res->getString("order_date") << "|" << endl;
+                printf("+----+--------------------------+------------------+--------------------+\n");
+        }
+        cout << endl;
+        delete res;
+        delete pstmt;
+    }
+    catch (SQLException& e)
+    {
+        error(e);
+    }
+}
+

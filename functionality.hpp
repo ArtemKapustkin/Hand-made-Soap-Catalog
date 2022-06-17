@@ -3,22 +3,27 @@
 #include "sha256.hpp"
 #include "sql.hpp"
 
-class function 
+class function
 {
 private:
     query* q;
     string hashfunc(string a);
 
 public:
-    function(query * q);
+    function(query* q);
     ~function();
     int sign_up(string username, string email, string phone, string password);
     int sign_in(string username, string password);
     string get_user_role(int id);
     void set_role(int id);
+    void user_orders(int id);
     void select_user_by_id(int id, userdata& user);
+    void select_soap_by_id(int id, soap_by_id& s);
     void get_user_table();
     void get_soap_table();
+    void get_order_table();
+    int add_soap(string sn, int app, string c, double p, int s, int ti);
+    int add_order(int user_id, soap_ordered so);
 };
 
 function::function(query* q)
@@ -51,10 +56,22 @@ void function::set_role(int id)
     this->q->set_role(id);
 }
 
+void function::user_orders(int id)
+{
+    this->q->get_user_order_by_id(id);
+}
+
 void function::select_user_by_id(int id, userdata& user)
 {
     user = this->q->get_user_by_id(id);
     if (user.id == 0)
+        cout << "There is no user with such id";
+}
+
+void function::select_soap_by_id(int id, soap_by_id& s)
+{
+    s = this->q->get_soap_by_id(id);
+    if (s.id == 0)
         cout << "There is no user with such id";
 }
 
@@ -66,6 +83,21 @@ void function::get_user_table()
 void function::get_soap_table()
 {
     this->q->get_all_soap();
+}
+
+void function::get_order_table()
+{
+    this->q->get_all_orders();
+}
+
+int function::add_soap(string sn, int app, string c, double p, int s, int ti)
+{
+    return this->q->add_soap({0, sn, app, c, p, s, ti });
+}
+
+int function::add_order(int user_id, soap_ordered so)
+{
+    return this->q->add_order(user_id, so);
 }
 
 string function::hashfunc(string a)
