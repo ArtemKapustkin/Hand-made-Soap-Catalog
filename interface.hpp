@@ -21,6 +21,11 @@ public:
     void sign_in_form();
     void adding_soap();
     void adding_order(userdata u);
+    void user_list_menu();
+    void order_menu();
+    void change_role();
+    void change_status();
+    void delete_user();
 };
 
 int interface::input_correction()
@@ -67,23 +72,22 @@ void interface::adding_soap()
     cout << "Enter soap name in brackets" << endl << "< ";
     getchar();
     getline(cin, sn);
-    cout << endl << "Enter how much soap pieces in set (amount per pack)" << endl << "< ";
-    cin >> app;
+    cout << endl << "Enter how much soap pieces in set (amount per pack)" << endl ;
+    app = input_correction();
     cout << endl << "Enter collection" << endl << "< ";
     getchar();
     getline(cin, c);
     cout << endl << "Enter price" << endl << "< ";
     cin >> p;
-    cout << endl << "Enter how many of these sets are in stock" << endl << "< ";
-    cin >> s;
-    cout << endl << "Select type id:" << endl 
-    << "(1) Soap Floristy" << endl
-    << "(2) Care Product" << endl
-    << "(3) Gift Set" << endl
-    << "(4) Thematic Set" << endl
-    << "(5) Single" << endl
-    << "< ";
-    cin >> ti;
+    cout << endl << "Enter how many of these sets are in stock" << endl;
+    s = input_correction();;
+    cout << endl << "Select type id:" << endl;
+    cout << "(1) Soap Floristy" << endl;
+    cout << "(2) Care Product" << endl;
+    cout << "(3) Gift Set" << endl;
+    cout << "(4) Thematic Set" << endl;
+    cout << "(5) Single" << endl;
+    ti = input_correction();
     
     int soap_id = func->add_soap(sn, app, c, p, s, ti);
 }
@@ -127,6 +131,80 @@ void interface::adding_order(userdata u)
     }
 }
 
+void interface::change_status()
+{
+    int id;
+    string new_status;
+    cout << "Enter id of order, which status you want to change:" << endl;
+    id = input_correction();
+    cout << "Enter new status (accepted/rejected/completed):" << endl << "< ";
+    cin >> new_status;
+    func->changing_status(id, new_status);
+    cout << "This order status successfully changed, now it is - " << new_status << endl;
+}
+
+void interface::change_role()
+{
+    string new_role;
+    int id;
+    cout << "Enter id of user, whose role you want to change:" << endl;
+    id = input_correction();
+    string username_by_id = func->get_user_name(id);
+    cout << "Enter new role (client/manager/admin):" << endl << "< ";
+    cin >> new_role;
+    func->changing_role(id, new_role);
+    cout << "Role of user " << username_by_id << " successfully changed, now user role is - " << new_role << endl;
+}
+
+void interface::delete_user()
+{
+    int id;
+    cout << "Enter id of user, you want to delete:" << endl;
+    id = input_correction();
+    string username_by_id = func->get_user_name(id);
+    func->delete_user(id);
+    cout << "User " << username_by_id << " is successfully deleted!" <<  endl;
+}
+
+void interface::order_menu()
+{
+    cout << "> Change role (1)" << endl;
+    cout << "> Exit (2)" << endl;
+    int var = input_correction();
+    switch (var)
+    {
+    case 1:
+        change_status();
+        return;
+    case 2:
+        return;
+    default:
+        return;
+    }
+}
+
+void interface::user_list_menu()
+{
+    cout << "> Change role (1)" << endl;
+    cout << "> Delete user (2)" << endl;
+    cout << "> Exit (3)" << endl;
+    int var = input_correction();
+    switch (var)
+    {
+    case 1:
+        change_role();
+        return;
+    case 2:
+        delete_user();
+        return;
+    case 3:
+        exit(EXIT_SUCCESS);
+        return;
+    default:
+        return;
+    }
+}
+
 void interface::admin_menu()
 {
     system("cls");
@@ -140,18 +218,19 @@ void interface::admin_menu()
     case 1:
         func->get_user_table();
         system("pause");
-        break;
+        user_list_menu();
+        return;
     case 2:
         func->get_soap_table();
         system("pause");
-        break;
+        return;
     case 3:
         adding_soap();
         system("pause");
-        break;
+        return;
     case 4:
-        exit(EXIT_SUCCESS);
-        break;
+        system("cls");
+        start_programm();
     default:
         system("pause");
         return;
@@ -171,18 +250,19 @@ void interface::manager_menu()
     case 1:
         func->get_order_table();
         system("pause");
-        break;
+        order_menu();
+        return;
     case 2:
         func->get_soap_table();
         system("pause");
-        break;
+        return;
     case 3:
         adding_soap();
         system("pause");
-        break;
+        return;
     case 4:
-        exit(EXIT_SUCCESS);
-        break;
+        system("cls");
+        start_programm();
     default:
         system("pause");
         return;
@@ -195,25 +275,25 @@ void interface::client_menu()
     cout << "> Open soap list (1)" << endl;
     cout << "> Make an order (2)" << endl;
     cout << "> My orders (3)" << endl;
-    cout << "> Exit (3)" << endl;
+    cout << "> Exit (4)" << endl;
     int var = input_correction();
     switch (var)
     {
     case 1:
         func->get_soap_table();
         system("pause");
-        break;
+        return;
     case 2:
         adding_order(u);
         system("pause");
-        break;
+        return;
     case 3:
         func->user_orders(u.id);
         system("pause");
-        break;
+        return;
     case 4:
-        exit(EXIT_SUCCESS);
-        break;
+        system("cls");
+        start_programm();
     default:
         system("pause");
         return;
@@ -319,16 +399,24 @@ void interface::role_menu(string role)
     {
     case 1:
         cout << "Success authorization as admin!" << endl;
-        admin_menu();
-        system("pause");
+        while (true)
+        {
+            admin_menu();
+        }
         break;
     case 2:
         cout << "Success authorization as manager!" << endl;
-        manager_menu();
+        while (true)
+        {
+            manager_menu();
+        }
         break;
     case 3:
         cout << "Success authorization as client!" << endl;
-        client_menu();
+        while (true)
+        {
+            client_menu();
+        }
         break;
     }
 }

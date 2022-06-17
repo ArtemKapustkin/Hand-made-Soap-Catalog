@@ -30,15 +30,20 @@ public:
     int check_user(string username, string password);
     string get_role(int id);
     int add_user(sqluserdata a);
+    void delete_user(int id);
     int add_soap(soapdata s);
     int add_order(int user_id, soap_ordered so);
     void set_role(int id);
+    void change_role(int id, string new_role);
+    void change_status(int id, string new_status);
     userdata get_user_by_id(int id);
     soap_by_id get_soap_by_id(int id);
     void get_user_order_by_id(int id);
+    string get_user_name_by_id(int id);
     void get_all_users();
     void get_all_soap();
     void get_all_orders();
+    
 };
 
 query::query()
@@ -205,6 +210,81 @@ int query::add_order(int user_id, soap_ordered so)
         delete pstmt;
 
         return id;
+    }
+    catch (SQLException& e)
+    {
+        error(e);
+    }
+}
+
+string query::get_user_name_by_id(int id)
+{
+    try
+    {
+        string query = "SELECT username FROM store.user WHERE id = (?)";
+        pstmt = con->prepareStatement(query);
+        pstmt->setString(1, to_string(id));
+        res = pstmt->executeQuery();
+        string name;
+        if (res->next())
+        {
+            name = res->getString("username");
+        }
+        delete res;
+        delete pstmt;
+        return name;
+    }
+    catch (SQLException& e)
+    {
+        error(e);
+    }
+}
+
+void query::change_role(int id, string new_role)
+{
+    try
+    {
+        string query = "UPDATE store.role SET role_name = (?) WHERE user_id = (?);";
+        pstmt = con->prepareStatement(query);
+        pstmt->setString(1, new_role);
+        pstmt->setString(2, to_string(id));
+        pstmt->execute();
+        delete pstmt;
+    }
+    catch (SQLException& e)
+    {
+        error(e);
+    }
+}
+
+void query::change_status(int id, string new_status)
+{
+    try
+    {
+        string query = "UPDATE store.order SET order_status = (?) WHERE id = (?);";
+        pstmt = con->prepareStatement(query);
+        pstmt->setString(1, new_status);
+        pstmt->setString(2, to_string(id));
+        pstmt->execute();
+        delete pstmt;
+    }
+    catch (SQLException& e)
+    {
+        error(e);
+    }
+}
+
+void query::delete_user(int id)
+{
+    try
+    {
+        string query = "DELETE FROM store.user WHERE id = (?)";
+        pstmt = con->prepareStatement(query);
+        pstmt->setString(1, to_string(id));
+        res = pstmt->executeQuery();
+
+        delete res;
+        delete pstmt;
     }
     catch (SQLException& e)
     {

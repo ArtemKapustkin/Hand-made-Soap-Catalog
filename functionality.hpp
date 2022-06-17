@@ -15,7 +15,10 @@ public:
     int sign_up(string username, string email, string phone, string password);
     int sign_in(string username, string password);
     string get_user_role(int id);
+    string get_user_name(int id);
     void set_role(int id);
+    void changing_role(int id, string new_role);
+    void changing_status(int id, string new_status);
     void user_orders(int id);
     void select_user_by_id(int id, userdata& user);
     void select_soap_by_id(int id, soap_by_id& s);
@@ -24,6 +27,7 @@ public:
     void get_order_table();
     int add_soap(string sn, int app, string c, double p, int s, int ti);
     int add_order(int user_id, soap_ordered so);
+    void delete_user(int id);
 };
 
 function::function(query* q)
@@ -54,6 +58,26 @@ string function::get_user_role(int id)
 void function::set_role(int id)
 {
     this->q->set_role(id);
+}
+
+string function::get_user_name(int id)
+{
+    return this->q->get_user_name_by_id(id);
+}
+
+void function::changing_role(int id, string new_role)
+{
+    this->q->change_role(id, new_role);
+}
+
+void function::changing_status(int id, string new_status)
+{
+    this->q->change_status(id, new_status);
+}
+
+void function::delete_user(int id)
+{
+    this->q->delete_user(id);
 }
 
 void function::user_orders(int id)
