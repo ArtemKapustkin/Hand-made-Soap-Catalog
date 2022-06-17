@@ -52,37 +52,51 @@ int function::sign_in(string username, string password)
 
 string function::get_user_role(int id)
 {
+    if (id == 0)
+        cout << "There is no user with such id";
     return this->q->get_role(id);
 }
 
 void function::set_role(int id)
 {
     this->q->set_role(id);
+    if (id == 0)
+        cout << "There is no user with such id";
 }
 
 string function::get_user_name(int id)
 {
+    if (id == 0)
+        cout << "There is no user with such id";
     return this->q->get_user_name_by_id(id);
 }
 
 void function::changing_role(int id, string new_role)
 {
     this->q->change_role(id, new_role);
+    if (id == 0)
+        cout << "There is no user with such id";
 }
 
 void function::changing_status(int id, string new_status)
 {
     this->q->change_status(id, new_status);
+    if (id == 0)
+        cout << "There is no order with such id";
 }
 
 void function::delete_user(int id)
 {
     this->q->delete_user(id);
+    if (id == 0)
+        cout << "There is no user with such id";
 }
 
 void function::user_orders(int id)
 {
     this->q->get_user_order_by_id(id);
+    if (id == 0)
+        cout << "There is no user with such id";
 }
 
 void function::select_user_by_id(int id, userdata& user)

@@ -23,6 +23,8 @@ public:
     void adding_order(userdata u);
     void user_list_menu();
     void order_menu();
+    void create_order_menu();
+    void soap_menu();
     void change_role();
     void change_status();
     void delete_user();
@@ -183,6 +185,40 @@ void interface::order_menu()
     }
 }
 
+void interface::create_order_menu()
+{
+    cout << "> Create an order (1)" << endl;
+    cout << "> Exit (2)" << endl;
+    int var = input_correction();
+    switch (var)
+    {
+    case 1:
+        adding_order(u);
+        return;
+    case 2:
+        return;
+    default:
+        return;
+    }
+}
+
+void interface::soap_menu()
+{
+    cout << "> Add soap (1)" << endl;
+    cout << "> Exit (2)" << endl;
+    int var = input_correction();
+    switch (var)
+    {
+    case 1:
+        adding_soap();
+        return;
+    case 2:
+        return;
+    default:
+        return;
+    }
+}
+
 void interface::user_list_menu()
 {
     cout << "> Change role (1)" << endl;
@@ -198,7 +234,6 @@ void interface::user_list_menu()
         delete_user();
         return;
     case 3:
-        exit(EXIT_SUCCESS);
         return;
     default:
         return;
@@ -210,7 +245,7 @@ void interface::admin_menu()
     system("cls");
     cout << "> Open users list (1)" << endl;
     cout << "> Open soap list (2)" << endl;
-    cout << "> Add new soap (3)" << endl;
+    cout << "> Open order list (3)" << endl;
     cout << "> Exit (4)" << endl;
     int var = input_correction();
     switch (var)
@@ -223,10 +258,12 @@ void interface::admin_menu()
     case 2:
         func->get_soap_table();
         system("pause");
+        soap_menu();
         return;
     case 3:
-        adding_soap();
+        func->get_order_table();
         system("pause");
+        order_menu();
         return;
     case 4:
         system("cls");
@@ -242,8 +279,7 @@ void interface::manager_menu()
     system("cls");
     cout << "> Open order list (1)" << endl;
     cout << "> Open soap list (2)" << endl;
-    cout << "> Add new soap (3)" << endl;
-    cout << "> Exit (4)" << endl;
+    cout << "> Exit (3)" << endl;
     int var = input_correction();
     switch (var)
     {
@@ -255,12 +291,9 @@ void interface::manager_menu()
     case 2:
         func->get_soap_table();
         system("pause");
+        soap_menu();
         return;
     case 3:
-        adding_soap();
-        system("pause");
-        return;
-    case 4:
         system("cls");
         start_programm();
     default:
@@ -272,26 +305,22 @@ void interface::manager_menu()
 void interface::client_menu()
 {
     system("cls");
-    cout << "> Open soap list (1)" << endl;
-    cout << "> Make an order (2)" << endl;
-    cout << "> My orders (3)" << endl;
-    cout << "> Exit (4)" << endl;
+    cout << "> Open soap list and create an order (1)" << endl;
+    cout << "> My orders (2)" << endl;
+    cout << "> Exit (3)" << endl;
     int var = input_correction();
     switch (var)
     {
     case 1:
         func->get_soap_table();
         system("pause");
+        create_order_menu();
         return;
     case 2:
-        adding_order(u);
-        system("pause");
-        return;
-    case 3:
         func->user_orders(u.id);
         system("pause");
         return;
-    case 4:
+    case 3:
         system("cls");
         start_programm();
     default:
@@ -341,7 +370,7 @@ void interface::sign_in_form()
     int id = this->func->sign_in(n, p);
     if (id != 0)
     {
-        cout << "Success authorization into " << n << " account!" << endl;
+        cout << "Success authorization as " << n << endl;
         userdata user;
         this->func->select_user_by_id(id, user);
         this->u.id = id;
@@ -349,7 +378,6 @@ void interface::sign_in_form()
         this->u.email = user.email;
         this->u.phone = user.phone;
         this->u.role = this->func->get_user_role(id);
-        cout << "Role" << u.role << endl;
         system("pause");
     }
     else
@@ -363,20 +391,26 @@ void interface::sign_in_form()
 void interface::main_menu()
 {
     system("cls");
-    cout << "> Sign up (1)" << endl;
-    cout << "> Log in (2)" << endl;
-    cout << "> Exit (3)" << endl;
+    cout << "> Open soap catalog (1)" << endl;
+    cout << "> Sign up (2)" << endl;
+    cout << "> Log in (3)" << endl;
+    cout << "> Exit (4)" << endl;
     int var = input_correction();
     switch (var)
     {
     case 1:
-        sign_up_form();
-        break;
+        func->get_soap_table();
+        system("pause");
+        return;
     case 2:
-        sign_in_form();
+        sign_up_form();
         system("pause");
         break;
     case 3:
+        sign_in_form();
+        system("pause");
+        break;
+    case 4:
         exit(EXIT_SUCCESS);
         break;
     default:
