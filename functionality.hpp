@@ -28,6 +28,8 @@ public:
     int add_soap(string sn, int app, string c, double p, int s, int ti);
     int add_order(int user_id, soap_ordered so);
     void delete_user(int id);
+    void changing_amount(int id, int amount);
+    int getting_quantity(int id);
 };
 
 function::function(query* q)
@@ -76,6 +78,20 @@ void function::changing_role(int id, string new_role)
     this->q->change_role(id, new_role);
     if (id == 0)
         cout << "There is no user with such id";
+}
+
+void function::changing_amount(int id, int amount)
+{
+    this->q->change_amount(id, amount);
+    if (id == 0)
+        cout << "There is no soap with such id";
+}
+
+int function::getting_quantity(int id)
+{
+    if (id == 0)
+        cout << "There is no order with such id";
+    return this->q->get_quantity(id);
 }
 
 void function::changing_status(int id, string new_status)

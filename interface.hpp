@@ -139,10 +139,14 @@ void interface::change_status()
     string new_status;
     cout << "Enter id of order, which status you want to change:" << endl;
     id = input_correction();
+    int q_to_del = func->getting_quantity(id);
     cout << "Enter new status (accepted/rejected/completed):" << endl << "< ";
     cin >> new_status;
     func->changing_status(id, new_status);
+    if (new_status == "completed")
+        func->changing_amount(id, q_to_del);
     cout << "This order status successfully changed, now it is - " << new_status << endl;
+    system("pause");
 }
 
 void interface::change_role()
@@ -170,7 +174,7 @@ void interface::delete_user()
 
 void interface::order_menu()
 {
-    cout << "> Change role (1)" << endl;
+    cout << "> Change status (1)" << endl;
     cout << "> Exit (2)" << endl;
     int var = input_correction();
     switch (var)
