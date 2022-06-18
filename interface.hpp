@@ -347,20 +347,40 @@ void interface::sign_up_form()
 
     cout << "Enter your email:" << endl;
     cin >> a.email;
+    while (a.email.size() > 255)
+    {
+        cout << "You enter correct email, no longer than 255 symbols:" << endl;
+        cin >> a.email;
+    }
 
     cout << "Enter your phone number:" << endl;
     cin >> a.phone;
-
+    while (a.phone.size() > 10)
+    {
+        cout << "You enter correct phone number, no longer than 10 symbols:" << endl;
+        cin >> a.phone;
+    }
+    string conf;
     cout << "Enter your password: " << endl;
     cin >> a.password;
-
-    int id = this->func->sign_up(a.username, a.email, a.phone, a.password);
-    if (id != 0)
+    cout << "Confirm the password: " << endl;
+    cin >> conf;
+    if (a.password == conf)
     {
-        cout << "You're successfully sign up!" << endl;
-        this->func->set_role(id);
+        int id = this->func->sign_up(a.username, a.email, a.phone, a.password);
+        if (id != 0)
+        {
+            cout << "You're successfully sign up!" << endl;
+            this->func->set_role(id);
+        }
+        system("pause");
     }
-    system("pause");
+    else
+    {
+        cout << "Password mismatch" << endl;
+        return;
+    }
+
 }
 
 void interface::sign_in_form()
