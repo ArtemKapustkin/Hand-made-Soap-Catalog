@@ -43,6 +43,7 @@ public:
     void get_all_users();
     void get_all_soap();
     void get_all_orders();
+    int get_soap_id_from_order_id(int order_id);
     void change_amount(int id, int amount);
     int get_quantity(int id);
 };
@@ -276,15 +277,45 @@ void query::change_status(int id, string new_status)
 }
 
 
+
+
+int query::get_soap_id_from_order_id(int order_id)
+{
+
+    try
+    {
+
+        string query = "select soap_id from store.soap_ordered where order_id = (?)";
+        pstmt = con->prepareStatement(query);
+        pstmt->setString(1, to_string(order_id));
+        res = pstmt->executeQuery();
+        int a;
+        if (res->next())
+        {
+            a = res->getInt("soap_id");
+        }
+        return a;
+        delete res;
+        delete pstmt;
+    }
+    catch (SQLException& e)
+    {
+        error(e);
+    }
+}
+
+
+
 void query::change_amount(int id, int amount)
 {
     
     try
     {
+        int new_id = get_soap_id_from_order_id(id);
         string query = "UPDATE store.soap SET stock = stock - (?) WHERE id = (?);";
         pstmt = con->prepareStatement(query);
         pstmt->setString(1, to_string(amount));
-        pstmt->setString(2, to_string(id));
+        pstmt->setString(2, to_string(new_id));
         res = pstmt->executeQuery();
 
         delete res;
